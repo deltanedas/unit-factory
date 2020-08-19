@@ -15,18 +15,15 @@
 	along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-(() => {
-
 const ui = require("ui-lib/library");
 
 const maxCount = 100;
-const floatc = method => extend(Floatc, {get: method});
 
 var dialog = null;
 var spawning = UnitTypes.dagger, count = 1;
 
 const spawn = () => {
-	const spawns = Vars.spawner.groundSpawns;
+	const spawns = Vars.spawner.spawns;
 	for (var i = 0; i < spawns.size; i++) {
 		for (var n = 0; n < count; n++) {
 			// 2 tiles of random to the unit position
@@ -41,43 +38,45 @@ const spawn = () => {
 };
 
 const build = () => {
-	dialog = new FloatingDialog("$unit-factory");
+	dialog = new BaseDialog("$unit-factory");
 	const table = dialog.cont;
 
 	/* Unit */
-	table.label(prov(() => spawning.localizedName));
+	table.label(() => spawning.localizedName);
 	table.row();
 
 	/* Unit selection */
-	table.pane(cons(list => {
+	table.pane(list => {
 		const units = Vars.content.units();
 		units.sort();
 		var i = 0;
-		units.each(cons(unit => {
+		units.each(unit => {
+			// Block "unit" for payloads
+			if (unit.isHidden()) return;
+
 			if (i++ % 4 == 0) {
 				list.row();
 			}
 
 			const icon = new TextureRegionDrawable(unit.icon(Cicon.full));
-			list.addImageButton(icon, run(() => {
+			list.button(icon, () => {
 				spawning = unit;
-			})).size(128);
-		}));
-	})).top().center();
+			}).size(128);
+		});
+	}).top().center();
 	table.row();
 
 	/* Count selection */
-	table.table(cons(t => {
-		t.defaults().left();
-		t.addSlider(1, maxCount, count, floatc(n => {
-			count = n;
-		}));
-		t.label(prov(() => "Count: " + count));
-	})).center();
+	const t = table.table().center().bottom().get();
+	t.defaults().left();
+	t.slider(1, maxCount, count, n => {
+		count = n;
+	});
+	t.label(() => "Count: " + count);
 
 	/* Buttons */
 	dialog.addCloseButton();
-	dialog.buttons.addImageTextButton("$unit-factory.spawn", Icon.modeAttack, run(spawn));
+	dialog.buttons.button("$unit-factory.spawn", Icon.modeAttack, run(spawn));
 };
 
 ui.onLoad(build);
@@ -90,5 +89,3 @@ ui.addButton("unit-factory", UnitTypes.dagger, () => {
 
 	dialog.show();
 });
-
-})();
