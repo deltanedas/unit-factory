@@ -1,7 +1,7 @@
 {
 	"name": "unit-factory",
 	"author": "DeltaNedas",
-	"displayName": "[coral]Unit [grey]Factory",
+	"displayName": "[coral]Unit [gray]Factory",
 	"description": "Spawn any enemy in sandbox.\n[stat]Requires [#00aaff]DeltaNedas/ui-lib[].",
 	"dependencies": ["ui-lib"],
 	"version": "2.0.0",
