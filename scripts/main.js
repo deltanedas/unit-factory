@@ -19,21 +19,20 @@ const ui = require("ui-lib/library");
 
 const maxCount = 100;
 
+const pos = new Vec2(-1, -1);
+
 var dialog = null;
 var spawning = UnitTypes.dagger, count = 1;
+var team = Vars.state.rules.waveTeam;
 
 const spawn = () => {
-	const spawns = Vars.spawner.spawns;
-	for (var i = 0; i < spawns.size; i++) {
-		for (var n = 0; n < count; n++) {
-			// 2 tiles of random to the unit position
-			Tmp.v1.rnd(2 * Vars.tilesize);
+	for (var n = 0; n < count; n++) {
+		// 2 tiles of random to the unit position
+		Tmp.v1.rnd(2 * Vars.tilesize);
 
-			var spawn = spawns.get(i);
-			var unit = spawning.create(Vars.state.rules.waveTeam);
-			unit.set(spawn.worldx() + Tmp.v1.x, spawn.worldy() + Tmp.v1.y);
-			unit.add();
-		}
+		var unit = spawning.create(team);
+		unit.set(pos.x + Tmp.v1.x, pos.y + Tmp.v1.y);
+		unit.add();
 	}
 };
 
@@ -74,9 +73,33 @@ const build = () => {
 	});
 	t.label(() => "Count: " + count);
 
+	table.row();
+	var posb;
+	posb = table.button("Set Position", () => {
+		dialog.hide();
+		ui.click((screen, world) => {
+			pos.set(world.x, world.y);
+			posb.getLabel().text = "Spawn at " + Math.round(pos.x / 8)
+				+ ", " + Math.round(pos.y / 8);
+			dialog.show();
+		}, true);
+	}).width(200).get();
+
+	table.row();
+
 	/* Buttons */
 	dialog.addCloseButton();
-	dialog.buttons.button("$unit-factory.spawn", Icon.modeAttack, run(spawn));
+	dialog.buttons.button("$unit-factory.spawn", Icon.modeAttack, spawn)
+		.disabled(() => !Vars.world.passable(pos.x / 8, pos.y / 8));
+
+	const teamRect = extendContent(TextureRegionDrawable, Tex.whiteui, {});
+	teamRect.tint.set(team.color);
+	dialog.buttons.button("$unit-factory.set-team", teamRect, () => {
+		ui.select("$unit-factory.set-team", Team.baseTeams, t => {
+			team = t;
+			teamRect.tint.set(team.color);
+		}, (i, t) => "[#" + t.color + "]" + t);
+	});
 };
 
 ui.onLoad(build);
