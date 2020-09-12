@@ -4,6 +4,7 @@
 	"displayName": "[coral]Unit [gray]Factory",
 	"description": "Spawn any enemy in sandbox.\n[stat]Requires [#00aaff]DeltaNedas/ui-lib[].",
 	"dependencies": ["ui-lib"],
-	"version": "2.1.0",
-	"hidden": true
+	"version": "2.1.1",
+	"hidden": true,
+	"minGameVersion": 105
 }
