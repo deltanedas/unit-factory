@@ -67,11 +67,18 @@ const build = () => {
 
 	/* Count selection */
 	const t = table.table().center().bottom().get();
+	var slider, field;
 	t.defaults().left();
-	t.slider(1, maxCount, count, n => {
+	slider = t.slider(1, maxCount, count, n => {
 		count = n;
-	});
-	t.label(() => "Count: " + count);
+		field.text = n;
+	}).get();
+	t.add("Count: ");
+	field = t.field("" + count, text => {
+		count = parseInt(text);
+		slider.value = count;
+	}).get();
+	field.validator = text => !isNaN(parseInt(text));
 
 	table.row();
 	var posb;
