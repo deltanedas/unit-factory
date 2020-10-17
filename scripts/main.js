@@ -8,11 +8,11 @@
 
 	This program is distributed in the hope that it will be useful,
 	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 	GNU General Public License for more details.
 
 	You should have received a copy of the GNU General Public License
-	along with this program.  If not, see <https://www.gnu.org/licenses/>.
+	along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
 const ui = require("ui-lib/library");
@@ -21,7 +21,7 @@ const maxCount = 100;
 
 const pos = new Vec2(-1, -1);
 
-var dialog = null;
+var dialog = null, button = null;
 var spawning = UnitTypes.dagger, count = 1;
 var team = Vars.state.rules.waveTeam;
 
@@ -60,6 +60,7 @@ const build = () => {
 			const icon = new TextureRegionDrawable(unit.icon(Cicon.full));
 			list.button(icon, () => {
 				spawning = unit;
+				button.style.imageUp = icon;
 			}).size(128);
 		});
 	}).top().center();
@@ -111,11 +112,11 @@ const build = () => {
 
 ui.onLoad(build);
 
-ui.addButton("unit-factory", UnitTypes.dagger, () => {
+ui.addButton("unit-factory", spawning, () => {
 	if (Vars.state.rules.mode() != Gamemode.sandbox) {
 		Vars.ui.showInfoToast("No cheating! [red]*slaps hand*", 5);
 		return;
 	}
 
 	dialog.show();
-});
+}, b => {button = b.get()});
