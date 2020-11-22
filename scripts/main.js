@@ -113,7 +113,8 @@ const build = () => {
 ui.onLoad(build);
 
 ui.addButton("unit-factory", spawning, () => {
-	if (Vars.state.rules.mode() != Gamemode.sandbox) {
+	const mode = Vars.state.rules.mode();
+	if (mode != Gamemode.sandbox && mode != Gamemode.editor) {
 		Vars.ui.showInfoToast("No cheating! [red]*slaps hand*", 5);
 		return;
 	}
