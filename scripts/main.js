@@ -135,13 +135,12 @@ ui.onLoad(() => {
 });
 
 ui.addButton("unit-factory", spawning, () => {
-	if (Vars.net.client() && !Vars.player.admin) {
-		Vars.ui.showInfoToast("You egg that would desync", 5);
-		return;
-	}
-
-	const mode = Vars.state.rules.mode();
-	if (mode != Gamemode.sandbox && mode != Gamemode.editor) {
+	if (Vars.net.client()) {
+		if (!Vars.player.admin) {
+			Vars.ui.showInfoToast("You egg that would desync", 5);
+			return;
+		}
+	} else if (Vars.state.rules.sector) {
 		Vars.ui.showInfoToast("No cheating! [red]*slaps hand*", 5);
 		return;
 	}
