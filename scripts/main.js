@@ -46,7 +46,7 @@ function spawnRemote() {
 	const code = [
 		// loop optimisation
 		(count ? "for(var n=0;n<" + count + ";n++){" : ""),
-			"Tmp.v1.rnd(" + 2 * Vars.tilesize * ");",
+			"Tmp.v1.rnd(" + 2 * Vars.tilesize + ");",
 			unitcode + ".create(" + teamcode + ")",
 			".set(" + pos.x + "+Tmp.v1.x," + pos.y + "+Tmp.v1.y)",
 			".add()",
@@ -57,7 +57,7 @@ function spawnRemote() {
 }
 
 function spawn() {
-	(Vars.net.client() ? spawnLocal : spawnRemote)();
+	(Vars.net.client() ? spawnRemote : spawnLocal)();
 }
 
 ui.onLoad(() => {
