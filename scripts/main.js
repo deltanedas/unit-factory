@@ -25,7 +25,8 @@ var dialog = null, button = null;
 var spawning = UnitTypes.dagger, count = 1;
 var team = Vars.state.rules.waveTeam;
 
-const spawn = () => {
+// Singleplayer, directly spawn the units
+function spawnLocal() {
 	for (var n = 0; n < count; n++) {
 		// 2 tiles of random to the unit position
 		Tmp.v1.rnd(2 * Vars.tilesize);
@@ -34,9 +35,32 @@ const spawn = () => {
 		unit.set(pos.x + Tmp.v1.x, pos.y + Tmp.v1.y);
 		unit.add();
 	}
-};
+}
 
-const build = () => {
+// Multiplayer, compile a function to send with /js, good for nydus and other abusive servers
+function spawnRemote() {
+	// TODO
+	const unitcode = "UnitTypes." + spawning.name;
+	const teamcode = "Team." + team.name;
+
+	const code = [
+		// loop optimisation
+		(count ? "for(var n=0;n<" + count + ";n++){" : ""),
+			"Tmp.v1.rnd(" + 2 * Vars.tilesize * ");",
+			unitcode + ".create(" + teamcode + ")",
+			".set(" + pos.x + "+Tmp.v1.x," + pos.y + "+Tmp.v1.y)",
+			".add()",
+		(count ? "}" : "")
+	].join("");
+
+	Call.sendChatMessage("/js " + code);
+}
+
+function spawn() {
+	(Vars.net.client() ? spawnLocal : spawnRemote)();
+}
+
+ui.onLoad(() => {
 	dialog = new BaseDialog("$unit-factory");
 	const table = dialog.cont;
 
@@ -108,11 +132,14 @@ const build = () => {
 			teamRect.tint.set(team.color);
 		}, (i, t) => "[#" + t.color + "]" + t);
 	});
-};
-
-ui.onLoad(build);
+});
 
 ui.addButton("unit-factory", spawning, () => {
+	if (Vars.net.client() && !Vars.player.isAdmin) {
+		Vars.ui.showInfoToast("You egg that would desync", 5);
+		return;
+	}
+
 	const mode = Vars.state.rules.mode();
 	if (mode != Gamemode.sandbox && mode != Gamemode.editor) {
 		Vars.ui.showInfoToast("No cheating! [red]*slaps hand*", 5);
