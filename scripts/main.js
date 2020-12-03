@@ -47,9 +47,9 @@ function spawnRemote() {
 		// loop optimisation
 		(count ? "for(var n=0;n<" + count + ";n++){" : ""),
 			"Tmp.v1.rnd(" + 2 * Vars.tilesize + ");",
-			unitcode + ".create(" + teamcode + ")",
-			".set(" + pos.x + "+Tmp.v1.x," + pos.y + "+Tmp.v1.y)",
-			".add()",
+			"var u=" + unitcode + ".create(" + teamcode + ");",
+			"u.set(" + pos.x + "+Tmp.v1.x," + pos.y + "+Tmp.v1.y);",
+			"u.add()",
 		(count ? "}" : "")
 	].join("");
 
@@ -110,7 +110,8 @@ ui.onLoad(() => {
 	posb = table.button("Set Position", () => {
 		dialog.hide();
 		ui.click((screen, world) => {
-			pos.set(world.x, world.y);
+			// We don't need sub-wu precision + make /js output nicer
+			pos.set(Math.round(world.x), Math.round(world.y));
 			posb.getLabel().text = "Spawn at " + Math.round(pos.x / 8)
 				+ ", " + Math.round(pos.y / 8);
 			dialog.show();
@@ -124,9 +125,9 @@ ui.onLoad(() => {
 	dialog.buttons.button("$unit-factory.spawn", Icon.modeAttack, spawn)
 		.disabled(() => !Vars.world.passable(pos.x / 8, pos.y / 8));
 
-	const teamRect = extendContent(TextureRegionDrawable, Tex.whiteui, {});
+	const teamRect = extend(TextureRegionDrawable, Tex.whiteui, {});
 	teamRect.tint.set(team.color);
-	dialog.buttons.button("$unit-factory.set-team", teamRect, () => {
+	dialog.buttons.button("$unit-factory.set-team", teamRect, 40, () => {
 		ui.select("$unit-factory.set-team", Team.baseTeams, t => {
 			team = t;
 			teamRect.tint.set(team.color);
