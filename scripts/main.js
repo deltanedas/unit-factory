@@ -18,18 +18,20 @@
 const ui = require("ui-lib/library");
 
 const maxCount = 100;
+const maxRand = 10;
 
 const pos = new Vec2(-1, -1);
 
 var dialog = null, button = null;
 var spawning = UnitTypes.dagger, count = 1;
 var team = Vars.state.rules.waveTeam;
+// Default 2 tiles of random to the unit position
+var rand = 2;
 
 // Singleplayer, directly spawn the units
 function spawnLocal() {
 	for (var n = 0; n < count; n++) {
-		// 2 tiles of random to the unit position
-		Tmp.v1.rnd(2 * Vars.tilesize);
+		Tmp.v1.rnd(Mathf.random(rand * Vars.tilesize));
 
 		var unit = spawning.create(team);
 		unit.set(pos.x + Tmp.v1.x, pos.y + Tmp.v1.y);
@@ -46,7 +48,7 @@ function spawnRemote() {
 	const code = [
 		// loop optimisation
 		(count ? "for(var n=0;n<" + count + ";n++){" : ""),
-			"Tmp.v1.rnd(" + 2 * Vars.tilesize + ");",
+			"Tmp.v1.rnd(" + Mathf.random(rand * Vars.tilesize) + ");",
 			"var u=" + unitcode + ".create(" + teamcode + ");",
 			"u.set(" + pos.x + "+Tmp.v1.x," + pos.y + "+Tmp.v1.y);",
 			"u.add()",
@@ -90,20 +92,36 @@ ui.onLoad(() => {
 	}).top().center();
 	table.row();
 
+	/* Random selection */
+	const r = table.table().center().bottom().get();
+	var rSlider, rField;
+	r.defaults().left();
+	rSlider = r.slider(0, maxRand, 0.125, rand, n => {
+		rand = n;
+		rField.text = n;
+	}).get();
+	r.add("Randomness: ");
+	rField = r.field("" + rand, text => {
+		rand = parseInt(text);
+		rSlider.value = rand;
+	}).get();
+	rField.validator = text => !isNaN(parseInt(text));
+	table.row();
+    
 	/* Count selection */
 	const t = table.table().center().bottom().get();
-	var slider, field;
+	var cSlider, cField;
 	t.defaults().left();
-	slider = t.slider(1, maxCount, count, n => {
+	cSlider = t.slider(1, maxCount, count, n => {
 		count = n;
-		field.text = n;
+		cField.text = n;
 	}).get();
 	t.add("Count: ");
-	field = t.field("" + count, text => {
+	cField = t.field("" + count, text => {
 		count = parseInt(text);
-		slider.value = count;
+		cSlider.value = count;
 	}).get();
-	field.validator = text => !isNaN(parseInt(text));
+	cField.validator = text => !isNaN(parseInt(text));
 
 	table.row();
 	var posb;
