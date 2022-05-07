@@ -83,7 +83,7 @@ ui.onLoad(() => {
 				list.row();
 			}
 
-			const icon = new TextureRegionDrawable(unit.icon(Cicon.full));
+			const icon = new TextureRegionDrawable(unit.uiIcon);
 			list.button(icon, () => {
 				spawning = unit;
 				button.style.imageUp = icon;
