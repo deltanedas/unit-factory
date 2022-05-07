@@ -23,7 +23,7 @@ const maxRand = 10;
 const pos = new Vec2(-1, -1);
 
 var dialog = null, button = null;
-var spawning = UnitTypes.dagger, count = 1;
+var spawning = UnitTypes.stell, count = 1;
 var team = Vars.state.rules.waveTeam;
 // Default 2 tiles of random to the unit position
 var rand = 2;
