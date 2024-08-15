@@ -15,7 +15,7 @@
 	along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-const ui = require("ui-lib/library");
+const ui = require("ui_lib/library");
 
 const maxCount = 100;
 const maxRand = 10;
